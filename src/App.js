@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Landing from "./pages/Landing";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import Register from "./pages/Register";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
       <Footer />
     </div>
