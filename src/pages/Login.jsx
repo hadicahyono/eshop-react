@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Box, Button, ButtonGroup, Text } from "@chakra-ui/react";
 import { AiOutlineEye } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { loginAction } from "../actions/userAction";
+import { useDispatch } from "react-redux";
 
 const API_URL = "http://localhost:2500";
 
 const Login = (props) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // untuk menjalakan action redux
   const [inputEmail, setInputEmail] = useState("");
   const [inputPass, setInputPass] = useState("");
   const [inputType, setInputType] = useState("password");
@@ -14,9 +19,12 @@ const Login = (props) => {
     // alert(`${inputEmail} ${inputPass}`);
     axios
       .get(API_URL + `/user?email=${inputEmail}&password=${inputPass}`)
-      .then((response) =>
-        localStorage.setItem("eshop_login", JSON.stringify(response.data[0]))
-      )
+      .then((response) => {
+        delete response.data[0].password;
+        localStorage.setItem("eshop_login", JSON.stringify(response.data[0]));
+        dispatch(loginAction(response.data[0]));
+        navigate("/", { replace: true });
+      })
       .catch((err) => console.log(err));
   };
 
@@ -38,7 +46,7 @@ const Login = (props) => {
             Sign in for shopping
           </Text>
           <div className="d-flex">
-            <h6 className="muted-color">Not have account ?</h6>
+            <h6 className="muted-color">Don't have account?</h6>
             <h6 className="ms-2 main-color">Sign Up</h6>
           </div>
           <div className="mt-5 mb-3">

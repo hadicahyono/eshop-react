@@ -1,8 +1,22 @@
 import React from "react";
-import { Button, ButtonGroup, Text } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
+} from "@chakra-ui/react";
+import { RxChevronDown } from "react-icons/rx";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const Navbar = (props) => {
+  const { username } = useSelector((state) => {
+    return {
+      username: state.userReducer.username,
+    };
+  });
   return (
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container">
@@ -68,16 +82,27 @@ const Navbar = (props) => {
             </li>
           </ul>
           <form className="d-flex" role="search">
-            <ButtonGroup>
-              <Link to="/login">
-                <Button type="button" colorScheme="teal" variant="solid">
-                  Login
+            {username ? (
+              <Menu>
+                <MenuButton as={Button} rightIcon={<RxChevronDown />}>
+                  {username}
+                </MenuButton>
+                <MenuList>
+                  <MenuItem>Logout</MenuItem>
+                </MenuList>
+              </Menu>
+            ) : (
+              <ButtonGroup>
+                <Link to="/login">
+                  <Button type="button" colorScheme="teal" variant="solid">
+                    Login
+                  </Button>
+                </Link>
+                <Button type="button" colorScheme="teal" variant="outline">
+                  Register
                 </Button>
-              </Link>
-              <Button type="button" colorScheme="teal" variant="outline">
-                Register
-              </Button>
-            </ButtonGroup>
+              </ButtonGroup>
+            )}
           </form>
         </div>
       </div>
