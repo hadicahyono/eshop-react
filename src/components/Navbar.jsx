@@ -6,17 +6,28 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Spinner,
+  Avatar,
+  AvatarBadge,
+  MenuDivider,
 } from "@chakra-ui/react";
-import { RxChevronDown } from "react-icons/rx";
-import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { AiOutlineLogout } from "react-icons/ai";
+import { useState } from "react";
+import { logoutAction } from "../actions/userAction";
 
 const Navbar = (props) => {
-  const { username } = useSelector((state) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { username, role } = useSelector((state) => {
     return {
       username: state.userReducer.username,
+      role: state.userReducer.role,
     };
   });
+
+  const [openMenu, setOpenMenu] = useState(false);
   return (
     <nav className="navbar navbar-expand-lg bg-light">
       <div className="container">
@@ -36,59 +47,51 @@ const Navbar = (props) => {
         </button>
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-            <li className="nav-item">
-              <a className="nav-link active" aria-current="page" href="/">
-                Home
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/">
-                Link
-              </a>
-            </li>
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
+            <li className="nav-item" onClick={() => navigate("/products")}>
+              <span
+                className="nav-link main-content-color"
+                style={{ cursor: "pointer" }}
               >
-                Dropdown
-              </a>
-              <ul className="dropdown-menu">
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Action
-                  </a>
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Another action
-                  </a>
-                </li>
-                <li>
-                  <hr className="dropdown-divider" />
-                </li>
-                <li>
-                  <a className="dropdown-item" href="/">
-                    Something else here
-                  </a>
-                </li>
-              </ul>
+                Products
+              </span>
             </li>
             <li className="nav-item">
-              {/* <a className="nav-link disabled">Disabled</a> */}
+              <span
+                className="nav-link main-content-color"
+                style={{ cursor: "pointer" }}
+              >
+                About
+              </span>
             </li>
           </ul>
           <form className="d-flex" role="search">
-            {username ? (
+            {props.loading ? (
+              <Spinner />
+            ) : username && !props.loading ? (
               <Menu>
-                <MenuButton as={Button} rightIcon={<RxChevronDown />}>
-                  {username}
+                <MenuButton type="button">
+                  <Avatar name={username} size="md">
+                    <AvatarBadge boxSize="1em" bg="green.500" />
+                  </Avatar>
                 </MenuButton>
-                <MenuList>
-                  <MenuItem>Logout</MenuItem>
+                <MenuList textColor="black">
+                  {role === "Admin" ? (
+                    <div>
+                      <MenuItem>Products Management</MenuItem>
+                      <MenuItem>Transactions Management</MenuItem>
+                    </div>
+                  ) : (
+                    <div>
+                      <MenuItem>Cart </MenuItem>
+                      <MenuItem>Transactions</MenuItem>
+                      <MenuItem>Profile</MenuItem>
+                    </div>
+                  )}
+                  <MenuDivider />
+                  <MenuItem onClick={() => dispatch(logoutAction())}>
+                    Logout
+                    <AiOutlineLogout className="ms-2" />
+                  </MenuItem>
                 </MenuList>
               </Menu>
             ) : (
@@ -98,9 +101,11 @@ const Navbar = (props) => {
                     Login
                   </Button>
                 </Link>
-                <Button type="button" colorScheme="teal" variant="outline">
-                  Register
-                </Button>
+                <Link to="/regis">
+                  <Button type="button" colorScheme="teal" variant="outline">
+                    Register
+                  </Button>
+                </Link>
               </ButtonGroup>
             )}
           </form>
